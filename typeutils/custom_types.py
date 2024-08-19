@@ -7,5 +7,5 @@ import pathlib
 import os
 
 
-PathLike = typing.Union[str, pathlib.Path, os.PathLike, None]
+PathLike = typing.Union[str, pathlib.Path, os.PathLike]
 DictLike = typing.Union[dict, collections.defaultdict]

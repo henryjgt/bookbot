@@ -5,7 +5,7 @@
 from collections import defaultdict
 import os
 import pathlib
-from typing import Optional
+from typing import Iterator, Optional
 
 from typeutils import DictLike, PathLike
 
@@ -15,10 +15,8 @@ def main():
 
     analysis = CorpusAnalyser(BOOK_TITLE)
 
-    console_logger(analysis.corpus, limit=50)
-
-    print("Word count:", analysis.word_count())
-    print("Unique character count:", analysis.unique_character_count())
+    # console_logger(analysis.corpus, limit=50)
+    console_logger(analysis.report)
 
 
 ###############################################################################
@@ -35,8 +33,9 @@ class CorpusAnalyser:
 
     def __init__(self, title: str):
         self._title: str = title
+
         self._corpus: str = self._load_corpus()
-        self._report = Reporter(self)  # <- inject reporting functionality
+        self._reporter = Reporter
 
     def _path_to_corpus(self) -> PathLike:
         """Search `./books/` for a matching title and return the filepath."""
@@ -79,7 +78,9 @@ class CorpusAnalyser:
 
     @property
     def report(self):
-        return self._report
+        return self._reporter(
+            self._title, self.word_count(), self.unique_character_count()
+        ).write_report()
 
 
 class Reporter:
@@ -88,11 +89,36 @@ class Reporter:
     the analysis of the corpus.
     """
 
+    def __init__(self, title: str, word_count: int, character_counts: DictLike):
+        self._title: str = title
+        self._word_count: int = word_count
+        self._character_counts: DictLike = character_counts
+
+    def _parse_character_dict(self) -> Iterator[str]:
+        for char, n in self._character_counts.items():
+            if not char.isalpha():
+                continue
+            yield f"The '{char}' character was found {n} times.\n"
+
+    def write_report(self) -> str:
+        ln_header = f"--- Begin report of books/{self._title}.txt ---\n"
+        ln_skip = "\n"
+        ln_footer = "--- End report ---"
+
+        ln_word_count = f"{self._word_count} words found in the document.\n"
+        ln_char_count = "".join((self._parse_character_dict()))
+
+        report_body = (
+            ln_header + ln_word_count + ln_skip + ln_char_count + ln_skip + ln_footer
+        )
+
+        return report_body
+
 
 def console_logger(text: str, limit: Optional[int] = None) -> None:
     """
     Print text to terminal.
-        limit: truncate the output to a given character length
+        - limit: truncate the output to a given character length
     """
 
     msg = ""
@@ -101,7 +127,7 @@ def console_logger(text: str, limit: Optional[int] = None) -> None:
         if limit < len(text):
             msg = "[...]"
 
-    print(f"Readable:\n{text}", msg, end="\n\n")
+    print(f"\n{text}", msg, end="\n\n")
 
 
 if __name__ == "__main__":
