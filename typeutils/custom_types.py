@@ -8,4 +8,4 @@ import os
 
 
 PathLike = typing.Union[str, pathlib.Path, os.PathLike]
-DictLike = typing.Union[dict, collections.defaultdict]
+DictLike = typing.Union[dict[str, int], collections.defaultdict[str, int]]

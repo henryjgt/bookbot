@@ -85,22 +85,37 @@ class CorpusAnalyser:
 
 class Reporter:
     """
-    Generates a report detailing the results of
-    the analysis of the corpus.
+    Generates a report detailing the results of the
+    analysis of the corpus.
     """
 
-    def __init__(self, title: str, word_count: int, character_counts: DictLike):
+    def __init__(
+        self,
+        title: str,
+        word_count: int,
+        character_counts: DictLike,
+    ):
         self._title: str = title
         self._word_count: int = word_count
         self._character_counts: DictLike = character_counts
 
+    def _sort_dict_by_value(self, d: DictLike) -> dict:
+        """."""
+
+        return dict(sorted(d.items(), reverse=True, key=lambda i: i[1]))
+
     def _parse_character_dict(self) -> Iterator[str]:
-        for char, n in self._character_counts.items():
+        """."""
+
+        sorted_dict = self._sort_dict_by_value(self._character_counts)
+        for char, n in sorted_dict.items():
             if not char.isalpha():
                 continue
             yield f"The '{char}' character was found {n} times.\n"
 
     def write_report(self) -> str:
+        """."""
+
         ln_header = f"--- Begin report of books/{self._title}.txt ---\n"
         ln_skip = "\n"
         ln_footer = "--- End report ---"
