@@ -1,6 +1,8 @@
 
 # directories to ignore
 books/
+.vscode/
+*env/
 
 # files to ignore 
 
