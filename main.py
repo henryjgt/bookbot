@@ -100,12 +100,10 @@ class Reporter:
         self._character_counts: DictLike = character_counts
 
     def _sort_dict_by_value(self, d: DictLike) -> dict:
-        """."""
-
         return dict(sorted(d.items(), reverse=True, key=lambda i: i[1]))
 
     def _parse_character_dict(self) -> Iterator[str]:
-        """."""
+        """Generate short description of letter frequency."""
 
         sorted_dict = self._sort_dict_by_value(self._character_counts)
         for char, n in sorted_dict.items():
@@ -114,7 +112,10 @@ class Reporter:
             yield f"The '{char}' character was found {n} times.\n"
 
     def write_report(self) -> str:
-        """."""
+        """
+        Return a short report detailing the stats of the corpus,
+        including the word and character counts.
+        """
 
         ln_header = f"--- Begin report of books/{self._title}.txt ---\n"
         ln_skip = "\n"
